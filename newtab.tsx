@@ -40,14 +40,6 @@ interface Theme {
   textSecondary: string
 }
 
-// 定义背景图片接口
-interface BackgroundImage {
-  url: string
-  author: string
-  authorUrl: string
-  downloadLocation: string
-}
-
 // 预设主题
 const themes: Theme[] = [
   {
@@ -137,8 +129,6 @@ function NewTab() {
   const [actionMessage, setActionMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null)
   const [currentTime, setCurrentTime] = useState(getCurrentTime())
   const [currentDate, setCurrentDate] = useState(getCurrentDate())
-  const [backgroundImage, setBackgroundImage] = useState<BackgroundImage | null>(null)
-  const [isBackgroundLoading, setIsBackgroundLoading] = useState(true)
   const editFormRef = useRef<HTMLDivElement>(null)
 
   // 从localStorage加载或保存主题设置
@@ -159,70 +149,6 @@ function NewTab() {
     localStorage.setItem('bookmarkTheme', newTheme.id)
     setThemeMenuOpen(false)
   }
-
-  // 获取随机背景图片
-  useEffect(() => {
-    const fetchRandomBackground = async () => {
-      try {
-        setIsBackgroundLoading(true)
-        
-        // 检查本地存储中是否有今天的图片
-        const today = new Date().toDateString()
-        const savedImage = localStorage.getItem('backgroundImage')
-        const savedDate = localStorage.getItem('backgroundImageDate')
-        
-        // 如果有今天的图片，直接使用
-        if (savedImage && savedDate === today) {
-          setBackgroundImage(JSON.parse(savedImage))
-          setIsBackgroundLoading(false)
-          return
-        }
-        
-        // 否则获取新图片
-        const collections = '4246141,1258090,825770' // 精选自然、景观集合
-        const response = await fetch(
-          `https://api.unsplash.com/photos/random?collections=${collections}&orientation=landscape`,
-          {
-            headers: {
-              Authorization: 'Client-ID 7dDzpUhR4Ydbe2AyQeWrXg7K7LSTbLVXEgZWW4uN5Rg' // 公共访问密钥
-            }
-          }
-        )
-        
-        if (!response.ok) {
-          throw new Error('获取背景图片失败')
-        }
-        
-        const data = await response.json()
-        
-        const imageData: BackgroundImage = {
-          url: data.urls.regular,
-          author: data.user.name,
-          authorUrl: data.user.links.html,
-          downloadLocation: data.links.download_location
-        }
-        
-        // 记录下载统计（Unsplash API要求）
-        fetch(imageData.downloadLocation, {
-          headers: {
-            Authorization: 'Client-ID 7dDzpUhR4Ydbe2AyQeWrXg7K7LSTbLVXEgZWW4uN5Rg'
-          }
-        }).catch(e => console.error('Failed to trigger download count:', e))
-        
-        // 保存到本地存储
-        localStorage.setItem('backgroundImage', JSON.stringify(imageData))
-        localStorage.setItem('backgroundImageDate', today)
-        
-        setBackgroundImage(imageData)
-        setIsBackgroundLoading(false)
-      } catch (err) {
-        console.error('获取背景图片失败:', err)
-        setIsBackgroundLoading(false)
-      }
-    }
-    
-    fetchRandomBackground()
-  }, [])
 
   useEffect(() => {
     // 获取书签数据
@@ -741,18 +667,9 @@ function NewTab() {
     )
   }
 
-  // 背景样式
-  const backgroundStyle = backgroundImage ? {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImage.url})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat'
-  } : {}
-
   return (
     <div 
-      className={`min-h-screen ${!backgroundImage ? theme.background : ''} p-8 transition-colors duration-300`}
-      style={backgroundStyle}
+      className={`min-h-screen ${theme.background} p-8 transition-colors duration-300`}
     >
       {/* 主题切换按钮 */}
       <button
@@ -771,8 +688,8 @@ function NewTab() {
       <div className="max-w-7xl mx-auto">
         {/* 顶部区域 */}
         <div className="mb-6 text-center">
-          <div className={`text-4xl font-bold ${backgroundImage ? 'text-white' : theme.textPrimary} mb-2`}>{currentTime}</div>
-          <div className={`text-lg ${backgroundImage ? 'text-white/80' : theme.textSecondary}`}>{currentDate}</div>
+          <div className={`text-4xl font-bold ${theme.textPrimary} mb-2`}>{currentTime}</div>
+          <div className={`text-lg ${theme.textSecondary}`}>{currentDate}</div>
         </div>
         
         {/* 搜索栏 */}
@@ -802,7 +719,7 @@ function NewTab() {
           </div>
         </div>
 
-        <h2 className={`text-2xl font-bold ${backgroundImage ? 'text-white' : theme.textPrimary} mb-6`}>我的书签目录</h2>
+        <h2 className={`text-2xl font-bold ${theme.textPrimary} mb-6`}>我的书签目录</h2>
         
         {filteredFolders.length === 0 ? (
           <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-8 text-center">
@@ -859,19 +776,7 @@ function NewTab() {
         )}
       </div>
       
-      <footer className={`mt-16 text-center ${backgroundImage ? 'text-white/70' : theme.textSecondary} text-sm pb-8`}>
-        {backgroundImage && (
-          <div className="mb-2">
-            背景由 <a 
-              href={backgroundImage.authorUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="underline hover:text-white"
-            >
-              {backgroundImage.author}
-            </a> 在 Unsplash 上提供
-          </div>
-        )}
+      <footer className={`mt-16 text-center ${theme.textSecondary} text-sm pb-8`}>
         <p>书签管理器 - 轻松浏览您的所有书签目录</p>
       </footer>
       
