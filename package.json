@@ -1,0 +1,40 @@
+{
+  "name": "easy-bookmark",
+  "displayName": "书签管理器",
+  "version": "0.0.1",
+  "description": "一个在新标签页展示书签内容的Chrome扩展。",
+  "author": "jcx13627607951@gmail.com",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "plasmo": "0.90.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@types/chrome": "0.0.258",
+    "@types/node": "20.11.5",
+    "@types/react": "18.2.48",
+    "@types/react-dom": "18.2.18",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.4",
+    "prettier": "3.2.4",
+    "tailwindcss": "3.3.0",
+    "typescript": "5.3.3"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*/*"
+    ],
+    "permissions": [
+      "bookmarks"
+    ],
+    "chrome_url_overrides": {
+      "newtab": "newtab.html"
+    }
+  }
+}
