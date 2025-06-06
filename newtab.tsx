@@ -47,7 +47,7 @@ const themes: Theme[] = [
     name: "清新绿",
     primary: "bg-teal-500",
     secondary: "bg-teal-50",
-    gradient: "bg-gradient-to-r from-teal-400 to-emerald-500",
+    gradient: "bg-gradient-to-r from-teal-400 to-emerald-500 opacity-80",
     background: "bg-gradient-to-br from-teal-50 to-emerald-100",
     hoverBg: "bg-green-50",
     textPrimary: "text-teal-800",
@@ -58,7 +58,7 @@ const themes: Theme[] = [
     name: "天空蓝",
     primary: "bg-blue-500",
     secondary: "bg-blue-50",
-    gradient: "bg-gradient-to-r from-blue-400 to-indigo-500",
+    gradient: "bg-gradient-to-r from-blue-400 to-indigo-500 opacity-80",
     background: "bg-gradient-to-br from-blue-50 to-indigo-100",
     hoverBg: "bg-blue-50",
     textPrimary: "text-blue-800",
@@ -69,7 +69,7 @@ const themes: Theme[] = [
     name: "梦幻紫",
     primary: "bg-purple-500",
     secondary: "bg-purple-50",
-    gradient: "bg-gradient-to-r from-purple-400 to-pink-500",
+    gradient: "bg-gradient-to-r from-purple-400 to-pink-500 opacity-80",
     background: "bg-gradient-to-br from-purple-50 to-pink-100",
     hoverBg: "bg-purple-50",
     textPrimary: "text-purple-800",
@@ -80,7 +80,7 @@ const themes: Theme[] = [
     name: "暖阳橙",
     primary: "bg-amber-500",
     secondary: "bg-amber-50",
-    gradient: "bg-gradient-to-r from-amber-400 to-orange-500",
+    gradient: "bg-gradient-to-r from-amber-400 to-orange-500 opacity-80",
     background: "bg-gradient-to-br from-amber-50 to-orange-100",
     hoverBg: "bg-amber-50",
     textPrimary: "text-amber-800",
@@ -91,7 +91,7 @@ const themes: Theme[] = [
     name: "典雅灰",
     primary: "bg-slate-500",
     secondary: "bg-slate-50",
-    gradient: "bg-gradient-to-r from-slate-400 to-gray-500",
+    gradient: "bg-gradient-to-r from-slate-400 to-gray-500 opacity-80",
     background: "bg-gradient-to-br from-slate-50 to-gray-100",
     hoverBg: "bg-slate-50",
     textPrimary: "text-slate-800",
@@ -129,7 +129,53 @@ function NewTab() {
   const [actionMessage, setActionMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null)
   const [currentTime, setCurrentTime] = useState(getCurrentTime())
   const [currentDate, setCurrentDate] = useState(getCurrentDate())
+  // 添加背景图片相关状态
+  const [backgroundImage, setBackgroundImage] = useState<string>("")
+  const [backgroundLoading, setBackgroundLoading] = useState(false)
+  const [useRandomBackground, setUseRandomBackground] = useState(false)
   const editFormRef = useRef<HTMLDivElement>(null)
+
+  // 获取随机背景图片
+  const fetchRandomBackground = async () => {
+    setBackgroundLoading(true)
+    try {
+      const response = await fetch('https://bing.img.run/rand.php', {
+        method: 'GET',
+        mode: 'cors'
+      })
+      
+      if (response.ok) {
+        // 获取图片的blob数据
+        const blob = await response.blob()
+        const imageUrl = URL.createObjectURL(blob)
+        setBackgroundImage(imageUrl)
+        
+        // 保存到localStorage
+        localStorage.setItem('randomBackgroundImage', imageUrl)
+        localStorage.setItem('backgroundImageTimestamp', Date.now().toString())
+        
+        showActionMessage('背景图片已更新', 'success')
+      } else {
+        throw new Error('获取图片失败')
+      }
+    } catch (err) {
+      console.error('获取随机背景图片失败:', err)
+      showActionMessage('获取背景图片失败', 'error')
+    } finally {
+      setBackgroundLoading(false)
+    }
+  }
+
+  // 切换背景模式
+  const toggleBackgroundMode = () => {
+    const newMode = !useRandomBackground
+    setUseRandomBackground(newMode)
+    localStorage.setItem('useRandomBackground', newMode.toString())
+    
+    if (newMode && !backgroundImage) {
+      fetchRandomBackground()
+    }
+  }
 
   // 从localStorage加载或保存主题设置
   useEffect(() => {
@@ -139,6 +185,28 @@ function NewTab() {
       const savedTheme = themes.find(t => t.id === savedThemeId)
       if (savedTheme) {
         setTheme(savedTheme)
+      }
+    }
+
+    // 加载背景设置
+    const savedBackgroundMode = localStorage.getItem('useRandomBackground')
+    if (savedBackgroundMode === 'true') {
+      setUseRandomBackground(true)
+      
+      // 检查是否有缓存的背景图片
+      const savedImage = localStorage.getItem('randomBackgroundImage')
+      const timestamp = localStorage.getItem('backgroundImageTimestamp')
+      
+      if (savedImage && timestamp) {
+        const imageAge = Date.now() - parseInt(timestamp)
+        // 如果图片缓存超过1小时，重新获取
+        if (imageAge < 60 * 60 * 1000) {
+          setBackgroundImage(savedImage)
+        } else {
+          fetchRandomBackground()
+        }
+      } else {
+        fetchRandomBackground()
       }
     }
   }, [])
@@ -430,11 +498,11 @@ function NewTab() {
     <div className={`fixed right-0 top-0 bottom-0 z-40 ${themeMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
       <div className="h-full w-64 bg-white shadow-xl flex flex-col">
         <div className={`${theme.gradient} p-4 text-white flex justify-between items-center`}>
-          <h3 className="font-medium">选择主题</h3>
+          <h3 className="font-medium">个性化设置</h3>
           <button 
             onClick={() => setThemeMenuOpen(false)}
             className="text-white hover:text-white/80"
-            aria-label="关闭主题选择"
+            aria-label="关闭设置"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -442,26 +510,79 @@ function NewTab() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <div className="space-y-3">
-            {themes.map((themeOption) => (
-              <button
-                key={themeOption.id}
-                onClick={() => changeTheme(themeOption)}
-                className={`w-full flex items-center p-3 rounded-lg transition-colors ${
-                  theme.id === themeOption.id ? 
-                  `${themeOption.gradient} text-white` : 
-                  'bg-gray-50 hover:bg-gray-100 text-gray-800'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full ${themeOption.gradient} mr-3`}></div>
-                <span>{themeOption.name}</span>
-                {theme.id === themeOption.id && (
-                  <svg className="ml-auto h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          {/* 背景设置区域 */}
+          <div className="mb-6">
+            <h4 className="text-sm font-medium text-gray-700 mb-3">背景设置</h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                )}
-              </button>
-            ))}
+                  <span className="text-sm text-gray-700">随机背景</span>
+                </div>
+                <button
+                  onClick={toggleBackgroundMode}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    useRandomBackground ? 'bg-blue-600' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      useRandomBackground ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              {useRandomBackground && (
+                <button
+                  onClick={fetchRandomBackground}
+                  disabled={backgroundLoading}
+                  className="w-full flex items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {backgroundLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                      获取中...
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      更换背景
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* 主题选择区域 */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">主题颜色</h4>
+            <div className="space-y-3">
+              {themes.map((themeOption) => (
+                <button
+                  key={themeOption.id}
+                  onClick={() => changeTheme(themeOption)}
+                  className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    theme.id === themeOption.id ? 
+                    `${themeOption.gradient} text-white` : 
+                    'bg-gray-50 hover:bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-full ${themeOption.gradient} mr-3`}></div>
+                  <span>{themeOption.name}</span>
+                  {theme.id === themeOption.id && (
+                    <svg className="ml-auto h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -669,116 +790,147 @@ function NewTab() {
 
   return (
     <div 
-      className={`min-h-screen ${theme.background} p-8 transition-colors duration-300`}
+      className={`min-h-screen transition-colors duration-300 ${
+        useRandomBackground && backgroundImage 
+          ? 'bg-cover bg-center bg-no-repeat' 
+          : theme.background
+      }`}
+      style={
+        useRandomBackground && backgroundImage 
+          ? { backgroundImage: `url(${backgroundImage})` }
+          : {}
+      }
     >
-      {/* 主题切换按钮 */}
-      <button
-        onClick={() => setThemeMenuOpen(true)}
-        className="fixed right-4 top-4 z-30 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all"
-        aria-label="更换主题"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-        </svg>
-      </button>
-
-      {/* 主题选择器 */}
-      {renderThemeSelector()}
-
-      <div className="max-w-7xl mx-auto">
-        {/* 顶部区域 */}
-        <div className="mb-6 text-center">
-          <div className={`text-4xl font-bold ${theme.textPrimary} mb-2`}>{currentTime}</div>
-          <div className={`text-lg ${theme.textSecondary}`}>{currentDate}</div>
-        </div>
-        
-        {/* 搜索栏 */}
-        <div className="mb-4 max-w-lg mx-auto">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="搜索书签文件夹..."
-              className={`w-full px-4 py-3 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-${theme.id}-400 focus:border-transparent bg-white/90 backdrop-blur-sm`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <svg
-              className={`absolute right-3 top-3 h-6 w-6 ${theme.textSecondary}`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-        </div>
-
-        <h2 className={`text-2xl font-bold ${theme.textPrimary} mb-6`}>我的书签目录</h2>
-        
-        {filteredFolders.length === 0 ? (
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-8 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            <p className="text-gray-600">
-              {searchTerm ? "没有找到匹配的书签文件夹" : "没有找到书签文件夹"}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredFolders.map((folder) => {
-              const bookmarksInFolder = folder.children?.filter(child => child.url) || []
-              const totalBookmarks = bookmarksInFolder.length
-              const hasMoreBookmarks = totalBookmarks > 5
-              
-              return (
-                <div 
-                  key={folder.id} 
-                  className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
-                >
-                  <div className={`${theme.gradient} p-3 flex flex-row items-center justify-between`}>
-                    <h4 className="flex-1 text-base font-semibold text-white truncate text-overflow-ellipsis">{folder.title}</h4>
-                    <div className="text-white/80 text-sm mt-1">
-                      {totalBookmarks} 个书签
-                    </div>
-                  </div>
-                  
-                  <div className="p-1">
-                    {bookmarksInFolder.length > 0 ? (
-                      <ul className="space-y-1 divide-y divide-gray-100">
-                        {bookmarksInFolder.slice(0, 5).map((bookmark) => renderBookmarkItem(bookmark, folder.id))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-500 italic p-2 text-center">此文件夹没有书签</p>
-                    )}
-                  </div>
-                  {hasMoreBookmarks && (
-                    <div className="p-2 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
-                      <button 
-                        onClick={() => openFolderDetail(folder.id)}
-                        className={`px-1 py-1 ${theme.secondary} ${theme.textSecondary} hover:bg-opacity-80 rounded-lg transition-colors group-hover:bg-opacity-80`}
-                      >
-                        查看全部 {totalBookmarks} 项
-                      </button>
-                    </div>
-                  )}
-                  
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+      {/* 如果使用随机背景，添加半透明遮罩层 */}
+      {useRandomBackground && backgroundImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-[1px] z-0"></div>
+      )}
       
-      <footer className={`mt-16 text-center ${theme.textSecondary} text-sm pb-8`}>
-        <p>书签管理器 - 轻松浏览您的所有书签目录</p>
-      </footer>
+      <div className="relative z-10 p-8">
+        {/* 主题切换按钮 */}
+        <button
+          onClick={() => setThemeMenuOpen(true)}
+          className="fixed right-4 top-4 z-30 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all"
+          aria-label="个性化设置"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+
+        {/* 主题选择器 */}
+        {renderThemeSelector()}
+
+        <div className="max-w-7xl mx-auto">
+          {/* 顶部区域 */}
+          <div className="mb-6 text-center">
+            <div className={`text-4xl font-bold mb-2 ${
+              useRandomBackground ? 'text-white drop-shadow-lg' : theme.textPrimary
+            }`}>{currentTime}</div>
+            <div className={`text-lg ${
+              useRandomBackground ? 'text-white/90 drop-shadow-md' : theme.textSecondary
+            }`}>{currentDate}</div>
+          </div>
+          
+          {/* 搜索栏 */}
+          <div className="mb-4 max-w-lg mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="搜索书签文件夹..."
+                className={`w-full px-4 py-3 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-${theme.id}-400 focus:border-transparent ${
+                  useRandomBackground ? 'bg-white/90' : 'bg-white/90'
+                } backdrop-blur-sm`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <svg
+                className={`absolute right-3 top-3 h-6 w-6 ${theme.textSecondary}`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <h2 className={`text-2xl font-bold mb-6 ${
+            useRandomBackground ? 'text-white drop-shadow-lg' : theme.textPrimary
+          }`}>我的书签目录</h2>
+          
+          {filteredFolders.length === 0 ? (
+            <div className={`${
+              useRandomBackground ? 'bg-white/95' : 'bg-white/90'
+            } backdrop-blur-sm rounded-xl shadow-md p-8 text-center`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <p className="text-gray-600">
+                {searchTerm ? "没有找到匹配的书签文件夹" : "没有找到书签文件夹"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredFolders.map((folder) => {
+                const bookmarksInFolder = folder.children?.filter(child => child.url) || []
+                const totalBookmarks = bookmarksInFolder.length
+                const hasMoreBookmarks = totalBookmarks > 5
+                
+                return (
+                  <div 
+                    key={folder.id} 
+                    className={`${
+                      useRandomBackground ? 'bg-white/95' : 'bg-white/90'
+                    } backdrop-blur-sm rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group`}
+                  >
+                    <div className={`${theme.gradient} p-3 flex flex-row items-center justify-between`}>
+                      <h4 className="flex-1 text-base font-semibold text-white truncate text-overflow-ellipsis">{folder.title}</h4>
+                      <div className="text-white/80 text-sm mt-1">
+                        {totalBookmarks} 个书签
+                      </div>
+                    </div>
+                    
+                    <div className="p-1">
+                      {bookmarksInFolder.length > 0 ? (
+                        <ul className="space-y-1 divide-y divide-gray-100">
+                          {bookmarksInFolder.slice(0, 5).map((bookmark) => renderBookmarkItem(bookmark, folder.id))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500 italic p-2 text-center">此文件夹没有书签</p>
+                      )}
+                    </div>
+                    {hasMoreBookmarks && (
+                      <div className="p-2 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
+                        <button 
+                          onClick={() => openFolderDetail(folder.id)}
+                          className={`px-1 py-1 ${theme.secondary} ${theme.textSecondary} hover:bg-opacity-80 rounded-lg transition-colors group-hover:bg-opacity-80`}
+                        >
+                          查看全部 {totalBookmarks} 项
+                        </button>
+                      </div>
+                    )}
+                    
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+        
+        <footer className={`mt-16 text-center text-sm pb-8 ${
+          useRandomBackground ? 'text-white/80 drop-shadow-md' : `${theme.textSecondary}`
+        }`}>
+          <p>书签管理器 - 轻松浏览您的所有书签目录</p>
+        </footer>
+      </div>
       
       {/* 文件夹详情模态框 */}
       {renderFolderDetail()}
