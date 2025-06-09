@@ -9,7 +9,7 @@
 
 A modern Chrome extension that provides an elegant bookmark management experience
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation--usage) • [Development](#-development-guide) • English  • [中文][./README-zh_CN.md]
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation--usage) • [Development](#-development-guide) • English  • [中文](./README-zh_CN.md)
 
 </div>
 
