@@ -28,14 +28,20 @@ export const useBackground = (
       if (response.ok) {
         // 获取图片的blob数据
         const blob = await response.blob()
-        const imageUrl = URL.createObjectURL(blob)
-        setBackgroundImage(imageUrl)
         
-        // 保存到localStorage
-        localStorage.setItem('randomBackgroundImage', imageUrl)
-        localStorage.setItem('backgroundImageTimestamp', Date.now().toString())
-        
-        showActionMessage('背景图片已更新', 'success')
+        // 将 blob 转换为 base64 格式
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          const base64String = reader.result as string
+          setBackgroundImage(base64String)
+          
+          // 保存到localStorage
+          localStorage.setItem('randomBackgroundImage', base64String)
+          localStorage.setItem('backgroundImageTimestamp', Date.now().toString())
+          
+          showActionMessage('背景图片已更新', 'success')
+        }
+        reader.readAsDataURL(blob)
       } else {
         throw new Error('获取图片失败')
       }
@@ -70,8 +76,8 @@ export const useBackground = (
       
       if (savedImage && timestamp) {
         const imageAge = Date.now() - parseInt(timestamp)
-        // 如果图片缓存超过1小时，重新获取
-        if (imageAge < 60 * 60 * 1000) {
+        // 如果图片缓存超过24小时，重新获取
+        if (imageAge < 24 * 60 * 60 * 1000) {
           setBackgroundImage(savedImage)
         } else {
           fetchRandomBackground()
