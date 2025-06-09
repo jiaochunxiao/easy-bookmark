@@ -9,7 +9,7 @@
 
 A modern Chrome extension that provides an elegant bookmark management experience
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation--usage) • [Development](#-development-guide)
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation--usage) • [Development](#-development-guide) • English  • [中文][./README-zh_CN.md]
 
 </div>
 
@@ -22,11 +22,15 @@ A modern Chrome extension that provides an elegant bookmark management experienc
 - **🔍 Detail View**: Click "View All" to see all bookmarks in folder details
 - **✏️ Edit Operations**: Support editing and deleting bookmarks within folders
 
+![](./assets/all.png)
+
 ### ⭐ Uncategorized Bookmark Management
 - **🤖 Smart Detection**: Automatically detect bookmarks not categorized into any folder
 - **📂 Virtual Folder**: Display uncategorized bookmarks as a special virtual folder
 - **🏷️ Special Identification**: Unique icons and descriptions for easy identification
 - **🔧 Full Functionality**: Complete support for viewing, editing, and deleting uncategorized bookmarks
+
+![](./assets/uncategory.png)
 
 ### 🔍 Smart Search
 - **📁 Folder Search**: Search by folder names
@@ -42,6 +46,9 @@ A modern Chrome extension that provides an elegant bookmark management experienc
 - **✏️ Edit Bookmarks**: Modify bookmark titles and URLs
 - **🗑️ Delete Bookmarks**: Delete unwanted bookmarks with confirmation
 - **💬 Operation Feedback**: Success/error messages for all operations
+
+![](./assets/edit.png)
+![](./assets/edit-modal.png)
 
 ---
 
@@ -63,7 +70,7 @@ A modern Chrome extension that provides an elegant bookmark management experienc
 - **📦 Manifest V3**: Latest extension manifest version
 
 ### Development Tools
-- **📦 Yarn**: Package manager
+- **📦 Pnpm**: Package manager
 - **🔧 PostCSS**: CSS post-processor
 - **🎯 ESLint**: Code quality linting
 
@@ -75,18 +82,18 @@ A modern Chrome extension that provides an elegant bookmark management experienc
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/your-username/smart-bookmark-manager.git
-   cd smart-bookmark-manager
+   git clone https://github.com/jiaochunxiao/easy-bookmark.git
+   cd easy-bookmark
    ```
 
 2. **Install Dependencies**
    ```bash
-   yarn install
+   pnpm install
    ```
 
 3. **Start Development Server**
    ```bash
-   yarn dev
+   pnpm dev
    ```
 
 4. **Load Extension**
@@ -98,7 +105,7 @@ A modern Chrome extension that provides an elegant bookmark management experienc
 ### Production Build
 
 ```bash
-yarn build
+pnpm build
 ```
 
 Find the production build in the `build/chrome-mv3-prod` folder
@@ -179,16 +186,12 @@ const createUncategorizedFolder = (uncategorizedBookmarks: BookmarkTreeNode[]): 
 
 ```bash
 # Development mode
-yarn dev
+pnpm dev
 
 # Production build
-yarn build
+pnpm build
 
-# Type checking
-yarn type-check
-
-# Code formatting
-yarn format
+pnpm package
 ```
 
 ---

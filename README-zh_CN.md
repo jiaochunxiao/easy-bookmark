@@ -1,4 +1,4 @@
-# 📚 便捷书签管理器 | Smart Bookmark Manager
+# 📚 便捷书签管理器 | Easy Bookmark Manager
 
 <div align="center">
 
@@ -11,7 +11,7 @@
 
 *A modern Chrome extension that provides an elegant bookmark management experience*
 
-[功能特性](#-功能特性) • [技术栈](#-技术栈) • [安装使用](#-安装使用) • [开发指南](#-开发指南)
+[功能特性](#-功能特性) • [技术栈](#-技术栈) • [安装使用](#-安装使用) • [开发指南](#-开发指南) • [English](./README.md)  • 中文
 
 </div>
 
@@ -24,11 +24,15 @@
 - **🔍 详情查看**: 点击"查看全部"可查看文件夹内所有书签 | *View all bookmarks in folder details*
 - **✏️ 编辑操作**: 支持对文件夹内书签的编辑和删除 | *Edit and delete bookmarks within folders*
 
+![](./assets/all.png)
+
 ### ⭐ 未归纳书签管理 | Uncategorized Bookmark Management
 - **🤖 智能识别**: 自动识别未分类到任何文件夹的书签 | *Automatically detect uncategorized bookmarks*
 - **📂 虚拟文件夹**: 将未归纳书签作为特殊虚拟文件夹显示 | *Display uncategorized bookmarks as virtual folder*
 - **🏷️ 特殊标识**: 独特的图标和描述，便于识别 | *Unique icons and descriptions for easy identification*
 - **🔧 完整功能**: 支持查看、编辑、删除未归纳书签 | *Full functionality for viewing, editing, and deleting*
+
+![](./assets/uncategory.png)
 
 ### 🔍 智能搜索功能 | Smart Search
 - **📁 文件夹搜索**: 支持按文件夹名称搜索 | *Search by folder names*
@@ -44,6 +48,9 @@
 - **✏️ 编辑书签**: 修改书签标题和URL | *Edit bookmark titles and URLs*
 - **🗑️ 删除书签**: 删除不需要的书签，带确认机制 | *Delete bookmarks with confirmation*
 - **💬 操作反馈**: 所有操作都有成功/失败的消息提示 | *Success/error feedback for all operations*
+
+![](./assets/edit.png)
+![](./assets/edit-modal.png)
 
 ---
 
@@ -65,7 +72,7 @@
 - **📦 Manifest V3**: 最新的扩展清单版本 | *Latest extension manifest version*
 
 ### 开发工具 | Development Tools
-- **📦 Yarn**: 包管理器 | *Package manager*
+- **📦 Pnpm**: 包管理器 | *Package manager*
 - **🔧 PostCSS**: CSS后处理器 | *CSS post-processor*
 - **🎯 ESLint**: 代码质量检查 | *Code quality linting*
 
@@ -77,18 +84,18 @@
 
 1. **克隆项目 | Clone Repository**
    ```bash
-   git clone https://github.com/your-username/smart-bookmark-manager.git
-   cd smart-bookmark-manager
+   git clone https://github.com/jiaochunxiao/easy-bookmark.git
+   cd easy-bookmark
    ```
 
 2. **安装依赖 | Install Dependencies**
    ```bash
-   yarn install
+   pnpm install
    ```
 
 3. **启动开发服务器 | Start Development Server**
    ```bash
-   yarn dev
+   pnpm dev
    ```
 
 4. **加载扩展 | Load Extension**
@@ -100,7 +107,7 @@
 ### 生产构建 | Production Build
 
 ```bash
-yarn build
+pnpm build
 ```
 
 构建完成后，在 `build/chrome-mv3-prod` 文件夹中找到生产版本 | *Find the production build in `build/chrome-mv3-prod` folder*
@@ -181,16 +188,16 @@ const createUncategorizedFolder = (uncategorizedBookmarks: BookmarkTreeNode[]): 
 
 ```bash
 # 开发模式 | Development mode
-yarn dev
+pnpm dev
 
 # 生产构建 | Production build
-yarn build
+pnpm build
 
 # 类型检查 | Type checking
-yarn type-check
+pnpm type-check
 
 # 代码格式化 | Code formatting
-yarn format
+pnpm format
 ```
 
 ---
