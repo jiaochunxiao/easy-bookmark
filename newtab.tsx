@@ -231,7 +231,7 @@ function NewTab() {
     >
       {/* 如果使用随机背景，添加半透明遮罩层 */}
       {useRandomBackground && backgroundImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-[1px] z-0"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-10 z-0"></div>
       )}
       
       <div className="relative z-10 p-8">

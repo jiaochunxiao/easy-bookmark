@@ -27,7 +27,7 @@ export const FolderCard = ({
   return (
     <div 
       className={`${
-        useRandomBackground ? 'bg-white/80 opacity-80' : 'bg-white/90'
+        useRandomBackground ? 'bg-white/90 opacity-90' : 'bg-white/90'
       } backdrop-blur-sm rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group`}
     >
       <div className={`${theme.gradient} p-3 flex flex-row items-center justify-between`}>
