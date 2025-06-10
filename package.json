@@ -1,7 +1,7 @@
 {
   "name": "easy-bookmark",
   "displayName": "书签管理器",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个在新标签页展示书签内容的Chrome扩展。",
   "author": "jcx13627607951@gmail.com",
   "scripts": {
