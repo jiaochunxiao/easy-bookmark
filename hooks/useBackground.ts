@@ -77,7 +77,7 @@ export const useBackground = (
       if (savedImage && timestamp) {
         const imageAge = Date.now() - parseInt(timestamp)
         // 如果图片缓存超过24小时，重新获取
-        if (imageAge < 24 * 60 * 60 * 1000) {
+        if (imageAge < 7 * 24 * 60 * 60 * 1000) {
           setBackgroundImage(savedImage)
         } else {
           fetchRandomBackground()
