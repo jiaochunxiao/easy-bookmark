@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./style.css"
 
 // 导入类型定义
-import type { EditingBookmark, DeleteConfirm, ActionMessage } from './types'
+import type { EditingBookmark, DeleteConfirm, ActionMessage, BookmarkTreeNode } from './types'
 
 // 导入主题配置
 import { themes } from './config/themes'
@@ -86,7 +86,7 @@ function NewTab() {
   }
 
   // 打开编辑模式
-  const startEdit = (bookmark: any, folderId: string) => {
+  const startEdit = (bookmark: BookmarkTreeNode, folderId: string) => {
     if (!bookmark.url) return
     
     setEditingBookmark({
@@ -133,7 +133,7 @@ function NewTab() {
   }
   
   // 确认删除书签
-  const confirmDelete = (bookmark: any, folderId: string) => {
+  const confirmDelete = (bookmark: BookmarkTreeNode, folderId: string) => {
     setDeleteConfirm({
       bookmarkId: bookmark.id,
       title: bookmark.title,
