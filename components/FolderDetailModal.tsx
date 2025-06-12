@@ -49,7 +49,7 @@ export const FolderDetailModal = ({
             </svg>
           </button>
         </div>
-        
+
         <div className="p-6 overflow-y-auto flex-grow">
           {bookmarks.length > 0 ? (
             <ul className="space-y-1 divide-y divide-gray-100">
@@ -81,7 +81,7 @@ export const FolderDetailModal = ({
             </div>
           )}
         </div>
-        
+
         <div className="border-t border-gray-100 p-4 flex justify-between items-center bg-gray-50">
           {isUncategorizedFolder && (
             <p className="text-sm text-gray-600">

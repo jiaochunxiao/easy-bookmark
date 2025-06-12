@@ -68,11 +68,11 @@ export const useBookmarks = (): UseBookmarksReturn => {
 
         // 获取所有书签
         const bookmarks = await chrome.bookmarks.getTree()
-        
+
         // 处理书签树，提取文件夹和未归纳的书签
         const folders = extractFolders(bookmarks[0])
         const uncategorized = extractUncategorizedBookmarks(bookmarks[0])
-        
+
         // 创建未归纳书签的虚拟文件夹
         const uncategorizedFolder: BookmarkTreeNode = {
           id: UNCATEGORIZED_FOLDER_ID,
@@ -82,12 +82,12 @@ export const useBookmarks = (): UseBookmarksReturn => {
           dateAdded: Date.now(),
           dateGroupModified: Date.now()
         }
-        
+
         // 将未归纳书签文件夹添加到文件夹列表的最后（如果有未归纳书签的话）
-        const allFolders = uncategorized.length > 0 
-          ? [...folders, uncategorizedFolder] 
+        const allFolders = uncategorized.length > 0
+          ? [...folders, uncategorizedFolder]
           : folders
-        
+
         setBookmarkFolders(allFolders)
         setLoading(false)
       } catch (err) {
@@ -107,4 +107,4 @@ export const useBookmarks = (): UseBookmarksReturn => {
     updateBookmark,
     removeBookmark
   }
-} 
+}

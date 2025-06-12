@@ -37,7 +37,7 @@ export const ThemeSelector = ({
             </svg>
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-4">
           {/* 背景设置区域 */}
           <div className="mb-6">

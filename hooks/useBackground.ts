@@ -58,7 +58,6 @@ export const useBackground = (
     const newMode = !useRandomBackground
     setUseRandomBackground(newMode)
     localStorage.setItem('useRandomBackground', newMode.toString())
-    
     if (newMode && !backgroundImage) {
       fetchRandomBackground()
     }
